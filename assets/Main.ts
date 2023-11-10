@@ -96,7 +96,7 @@ export class Main extends cc.Component {
         }
         let hor: cc.Node = this.node.getChildByName('hor');
         const virScrollView: VirtualList = hor.getChildByName('horScrollView').getComponent(VirtualList);
-        virScrollView.initData({ data: scrollViewData, clickCallback: (index) => { } }, 2);
+        virScrollView.initData({ data: scrollViewData, clickCallback: (index) => { } }, 0);
         virScrollView.horScrollToIndex(0, 1);
     }
 

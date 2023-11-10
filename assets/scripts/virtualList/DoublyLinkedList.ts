@@ -236,7 +236,7 @@ export class DoublyLinkedList<T> {
      * @description: 获取最后一个值
      * @return {*}
      */
-    public get Last(index: number): T {
+    public get Last(): T {
         return this.get(this.length - 1);
     }
 

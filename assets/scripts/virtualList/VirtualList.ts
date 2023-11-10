@@ -259,17 +259,9 @@ export class VirtualList extends cc.ScrollView {
             this.itemCount = this.data.length;
         } else if (this.contentPonit === -1) {
             // 最顶部/左边的位置，超过回收
-            if (this.itemIndex) {
-                // 最顶部/左边的位置，超过回收
-                this.tLPos = -(-(this.itemWidth + this.paddingX) + this.itemWidth / 2 + this.contentParentWH / 2);
-                this.bRPos = (this.itemWidth + this.paddingX) * (onePageItemCount - 1) + this.itemWidth / 2 - this.contentParentWH / 2;
-            } else {
-                // 最顶部/左边的位置，超过回收
-                this.tLPos = -((this.itemWidth + this.paddingX) * (this.overViewCount - 1) + this.itemWidth / 2 + this.contentParentWH / 2);
-                // 最底部/右边的位置，超过回收
-                this.bRPos = (this.itemWidth + this.paddingX) * (this.overViewCount + onePageItemCount - 1) + this.itemWidth / 2 - this.contentParentWH / 2;
-            }
-
+            this.tLPos = -((this.itemWidth + this.paddingX) * (this.overViewCount - 1) + this.itemWidth / 2 + this.contentParentWH / 2);
+            // 最底部/右边的位置，超过回收
+            this.bRPos = (this.itemWidth + this.paddingX) * (this.overViewCount + onePageItemCount - 1) + this.itemWidth / 2 - this.contentParentWH / 2;
             this.itemCount = Math.ceil(this.contentParentWH / (this.itemWidth + this.paddingX)) + (this.overViewCount | 0) * 2;
         }
         // 根据父节点计算需要创建的item个数
@@ -316,8 +308,7 @@ export class VirtualList extends cc.ScrollView {
      */
     private initBaseItem(itemCount: number) {
         this.tLIndex = this.startIndex;
-        // this.bRIndex = this.startIndex + itemCount - 1;
-        this.bRIndex = itemCount - 1 - this.itemIndex;
+        this.bRIndex = this.startIndex + itemCount - 1;
 
         if (this.horizontal) {
             // 水平
@@ -357,11 +348,6 @@ export class VirtualList extends cc.ScrollView {
             contentTra.setAnchorPoint(0.5, 0.5);
             this.content.setPosition(0, 0, 0);
         } else {
-            // if (this.itemIndex) {
-            //     contentTra.setAnchorPoint(0, 0.5);
-            //     let itemPos: number = -(this.contentParentWH / 2 + (this.itemWidth + this.paddingX) * this.itemIndex);
-            //     this.content.setPosition(itemPos, 0);
-            // }
         }
         this.content.parent.getComponent(cc.Widget).updateAlignment();
     }
@@ -371,9 +357,6 @@ export class VirtualList extends cc.ScrollView {
      * @return {*}
      */
     private setVerticalContentPos(): void {
-        if (this.itemIndex) {
-
-        }
     }
 
     /**
@@ -392,8 +375,7 @@ export class VirtualList extends cc.ScrollView {
                 itemNode.setPosition(itemPos, 0, 0);
                 this.offsetX += this.itemWidth + this.paddingX;
             } else if (this.contentPonit === -1) {
-                let idx: number = this.itemIndex ? index - this.overViewCount : index;
-                itemPos = this.paddingLeft + (this.itemWidth + this.paddingX) * idx + this.itemWidth / 2;
+                itemPos = this.paddingLeft + (this.itemWidth + this.paddingX) * index + this.itemWidth / 2;
                 itemNode.setPosition(itemPos, 0, 0);
             }
             trace('水平排列位置, itemPos:', itemPos);
@@ -409,9 +391,8 @@ export class VirtualList extends cc.ScrollView {
             const func = comp[virtualScrollViewFunc.virtualScrollViewData];
             if (typeof func === 'function') {
                 // item 数据处理
-                let idx: number = this.itemIndex ? (this.itemIndex - this.overViewCount) + index : index;
-                if (index >= 0 && index < (this.data.length - this.itemIndex)) {
-                    func.call(comp, idx, this.data[idx], (index: number) => {
+                if (index >= 0 && index < this.data.length) {
+                    func.call(comp, index, this.data[index], (index: number) => {
                         trace('点击了item', index)
                         this.clickCallback && this.clickCallback(index);
                     });
@@ -584,8 +565,7 @@ export class VirtualList extends cc.ScrollView {
         // 左滑
         if (contentPos.x < this.lastContentPos && this.bRIndex < (this.data.length - 1)) {
             // content 位置
-            let itemPosX: number = this.itemIndex ? this.itemNodeList.get(this.overViewCount).position.x : this.itemNodeList.First.position.x;
-            const relX: number = itemPosX + contentPos.x;
+            const relX: number = this.itemNodeList.First.position.x + contentPos.x;
             if (relX < this.tLPos) {
                 trace('this.bRIndex:', this.bRIndex, 'data.length -1:', this.data.length - 1);
                 this.bRIndex++;
@@ -598,9 +578,8 @@ export class VirtualList extends cc.ScrollView {
         }
 
         // 右滑
-        if (contentPos.x > this.lastContentPos && this.tLIndex + this.itemIndex > 0) {
+        if (contentPos.x > this.lastContentPos && this.tLIndex > 0) {
             // content 位置
-            let itemPosX: number = this.itemIndex ? this.itemNodeList.get(this.overViewCount).position.x : this.itemNodeList.First.position.x;
             const relX: number = this.itemNodeList.Last.position.x + contentPos.x;
             if (relX > this.bRPos) {
                 this.tLIndex--;
