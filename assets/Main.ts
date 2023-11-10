@@ -9,10 +9,10 @@ import * as cc from 'cc';
 import { VirtualList } from './scripts/virtualList/VirtualList';
 
 const trace = function (...args) {
-    console.log("main【HYJ】", ...args);
+    console.log("Main【HYJ】", ...args);
 }
 const traceError = function (...args) {
-    console.error("main【HYJ】", ...args);
+    console.error("Main【HYJ】", ...args);
 }
 
 const { ccclass, property } = cc._decorator;
@@ -90,11 +90,13 @@ export class Main extends cc.Component {
      * @return {*}
      */
     private horizontalScrolling(): void {
-        const scrollViewData: number[] = new Array(30).fill(1);
+        let scrollViewData: number[] = [];
+        for (let i = 0; i < 10; i++) {
+            scrollViewData.push(i);
+        }
         let hor: cc.Node = this.node.getChildByName('hor');
         const virScrollView: VirtualList = hor.getChildByName('horScrollView').getComponent(VirtualList);
-        virScrollView.initData(scrollViewData, (index) => {
-        });
+        virScrollView.initData({ data: scrollViewData, clickCallback: (index) => { } }, 2);
         virScrollView.horScrollToIndex(0, 1);
     }
 
@@ -103,11 +105,14 @@ export class Main extends cc.Component {
      * @return {*}
      */
     private verticalScrolling(): void {
-        const scrollViewData: number[] = new Array(30).fill(1);
+        let scrollViewData: number[] = [];
+        for (let i = 0; i < 10; i++) {
+            scrollViewData.push(i);
+        }
+        // const scrollViewData: number[] = new Array(30).fill(1);
         let hor: cc.Node = this.node.getChildByName('ver');
         const virScrollView: VirtualList = hor.getChildByName('verScrollView').getComponent(VirtualList);
-        virScrollView.initData(scrollViewData, (index) => {
-        });
+        virScrollView.initData({ data: scrollViewData, clickCallback: (index) => { } });
         virScrollView.verScrollToIndex(0, 1);
     }
 }
